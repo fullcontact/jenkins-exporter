@@ -1,0 +1,24 @@
+kill_signal = "SIGINT"
+log_level = "warn"
+max_stale = "10m"
+sanitize = false
+upcase = false
+
+secret {
+  no_prefix = true
+  path = "secret-***/***/***********/********"
+}
+
+vault {
+  grace = "15s"
+  renew_token = false
+  retry {
+    attempts = 5
+    backoff = "500ms"
+  }
+}
+
+wait {
+  min = "5s"
+  max = "10s"
+}
