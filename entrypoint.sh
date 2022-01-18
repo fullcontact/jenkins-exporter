@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 
-if [ $JENKINS_SERVER ] 
-then
-    sed -i "s~http://jenkins_server:8080~$JENKINS_SERVER~g" config.ini
-fi
+set -e
 
-if [ $JENKINS_USERNAME ]
-then
-    sed -i "s/username/$JENKINS_USERNAME/g" config.ini
-fi
 
-if [ $JENKINS_PASSWORD ]
-then
-    sed -i "s/password/$JENKINS_PASSWORD/g" config.ini
-fi
+initialise () {
+    # get vault token from vault
+    echo "Trying to login vault"
+    token=$(vault login -method=aws -format=json -token-only role=$VAULT_ROLE)
 
-/usr/local/bin/python main.py
+    # token above is guarded by doublequotes. remove them.
+    export VAULT_TOKEN="${token//\"}"
+
+    envconsul -once -config="/root/envconsul-config" sh /root/updateconf.sh
+}
+
+initialise
